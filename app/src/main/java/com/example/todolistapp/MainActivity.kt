@@ -7,7 +7,6 @@ import com.example.todolistapp.databinding.ActivityMainBinding
 
 private val database : Database = Database.getInstance()
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var notesAdapter : NotesAdapter
@@ -29,6 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         notesAdapter = NotesAdapter()
         binding.recyclerViewNotes.adapter = notesAdapter
+
+        notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
+            override fun onNoteClick(note: Note) {
+                database.remove(note.id)
+                showNotes()
+            }
+        }
+
     }
 
     override fun onResume() {

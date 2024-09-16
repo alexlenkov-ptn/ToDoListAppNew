@@ -12,8 +12,13 @@ class NotesAdapter() :
 
     var notes: List<Note> = listOf()
 
-    fun updateNotes(newNotes: List<Note>) {
-        notes = newNotes
+    var onNoteClickListener : OnNoteClickListener? = null
+        set(onNoteClickListener) {
+            field = onNoteClickListener
+        }
+
+    fun updateNotes(notes: List<Note>) {
+        this.notes = notes
         notifyDataSetChanged()
     }
 
@@ -39,6 +44,11 @@ class NotesAdapter() :
         }
         val color: Int = ContextCompat.getColor(viewHolder.itemView.context, colorResId)
         viewHolder.textViewNote.setBackgroundColor(color)
+
+        viewHolder.itemView.setOnClickListener {
+            onNoteClickListener?.onNoteClick(note)
+        }
+
     }
 
     override fun getItemCount(): Int {
@@ -47,6 +57,10 @@ class NotesAdapter() :
 
     class NotesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewNote: TextView = itemView.findViewById(R.id.textViewNote)
+    }
+
+    interface OnNoteClickListener {
+        fun onNoteClick(note: Note)
     }
 
 }
