@@ -3,6 +3,8 @@ package com.example.todolistapp
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
 private val database : Database = Database.getInstance()
@@ -18,6 +20,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val note : Note = notesAdapter.notes[position]
+                database.remove(note.id)
+                showNotes()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewNotes)
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -35,7 +59,6 @@ class MainActivity : AppCompatActivity() {
                 showNotes()
             }
         }
-
     }
 
     override fun onResume() {

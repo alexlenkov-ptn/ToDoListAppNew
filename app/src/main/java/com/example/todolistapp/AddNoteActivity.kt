@@ -29,7 +29,7 @@ class AddNoteActivity : AppCompatActivity() {
         val id = database.getNotes().size
         val text = binding.editTextTextNewNote.text.toString().trim()
         val priority = getPriority()
-        val note: Note = Note(id, text, priority)
+        val note = Note(id, text, priority)
         database.add(note)
         finish()
     }
