@@ -12,13 +12,13 @@ import androidx.room.RoomDatabase
 abstract class NoteDataBase : RoomDatabase() {
 
     private var instance: NoteDataBase? = null
-    private val DB_NAME = "notes.db"
+
 
     fun getInstance(application: Application): NoteDataBase? {
         if (instance == null) instance = Room.databaseBuilder(
             application,
             NoteDataBase::class.java,
-            DB_NAME,
+            Constants.DB_NAME,
         ).build()
         return instance
     }
