@@ -23,5 +23,6 @@ abstract class NoteDataBase : RoomDatabase() {
         return instance
     }
 
+    abstract fun notesDao() : NotesDao
 
 }
