@@ -21,27 +21,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val note : Note = notesAdapter.notes[position]
-                database.remove(note.id)
-                showNotes()
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-
-        itemTouchHelper.attachToRecyclerView(binding.recyclerViewNotes)
-
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -53,10 +32,29 @@ class MainActivity : AppCompatActivity() {
         notesAdapter = NotesAdapter()
         binding.recyclerViewNotes.adapter = notesAdapter
 
+        val itemTouchHelper = ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or  ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val note = notesAdapter.notes[position]
+                    database.remove(note.id)
+                    showNotes()
+                }
+            }
+        )
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewNotes)
+
         notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
             override fun onNoteClick(note: Note) {
-                database.remove(note.id)
-                showNotes()
             }
         }
     }
