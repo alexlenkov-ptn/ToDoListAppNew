@@ -1,5 +1,7 @@
 package com.example.todolistapp
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +19,11 @@ class NotesAdapter() :
             field = onNoteClickListener
         }
 
-    fun updateNotes(notes: List<Note>) {
-        this.notes = notes
-        notifyDataSetChanged()
-    }
+//    fun updateNotes(notes: List<Note>) {
+//        this.notes = notes
+//        notifyDataSetChanged()
+//    }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {

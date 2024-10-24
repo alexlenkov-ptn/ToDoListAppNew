@@ -21,7 +21,7 @@ abstract class NoteDataBase : RoomDatabase() {
                 NoteDataBase::class.java,
                 Constants.DB_NAME,
             )
-                .allowMainThreadQueries() // позволяет обойти ограничение, чтобы обойти главный поток
+//                .allowMainThreadQueries() // позволяет обойти ограничение, чтобы обойти главный поток
                 // можно указывать только в целях теста
                 .build()
             return instance

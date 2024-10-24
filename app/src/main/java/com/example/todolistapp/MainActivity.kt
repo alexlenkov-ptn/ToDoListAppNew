@@ -3,6 +3,8 @@ package com.example.todolistapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +13,8 @@ import com.example.todolistapp.databinding.ActivityMainBinding
 private var noteDataBase: NoteDataBase? = null
 
 class MainActivity : AppCompatActivity() {
+
+    private val handler = Handler(Looper.getMainLooper()) // сюда отправим объект Runnable, который будет вызывать метод run в главном потоке
 
     private lateinit var notesAdapter: NotesAdapter
 
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewNotes.adapter = notesAdapter
 
 
+
         val itemTouchHelper = ItemTouchHelper(
             object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -50,8 +55,15 @@ class MainActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val note = notesAdapter.notes[position]
-                    noteDataBase?.notesDao()?.remove(note.id)
-                    showNotes()
+
+                    val thread = Thread { // Создан поток. Внутри него удалим элемент
+                        noteDataBase?.notesDao()?.remove(note.id)
+                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
+                            showNotes() // вызываем на главном потоке
+                        })
+
+                    }
+                    thread.start()
                 }
             }
         )
@@ -72,8 +84,17 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showNotes() {
-        notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
-        notesAdapter.notifyDataSetChanged()
+        val thread = Thread {
+            val notes : List<Note> = noteDataBase?.notesDao()?.getNotes() ?: emptyList() // получение данных в фоновом потоке
+
+//            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
+
+            handler.post(kotlinx.coroutines.Runnable {
+                notesAdapter.notes = notes
+                notesAdapter.notifyDataSetChanged()
+            })
+        }
+        thread.start()
     }
 }
 

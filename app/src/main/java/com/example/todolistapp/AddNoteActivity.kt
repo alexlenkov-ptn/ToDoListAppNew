@@ -3,6 +3,8 @@ package com.example.todolistapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.todolistapp.databinding.ActivityAddNoteBinding
 import java.lang.IllegalStateException
@@ -15,6 +17,8 @@ class AddNoteActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Binding for ActivityAddNoteBinding ust not be null")
 
     private var noteDataBase: NoteDataBase? = null
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +36,15 @@ class AddNoteActivity : AppCompatActivity() {
         val text = binding.editTextTextNewNote.text.toString().trim()
         val priority = getPriority()
         val note = Note(text = text, priority = priority)
-        noteDataBase?.notesDao()?.addNote(note)
-        finish()
+
+        val thread = Thread{
+            noteDataBase?.notesDao()?.addNote(note)
+            handler.post(kotlinx.coroutines.Runnable {
+                finish()
+            })
+        }
+        thread.start()
+
     }
 
     private fun getPriority(): Int {
