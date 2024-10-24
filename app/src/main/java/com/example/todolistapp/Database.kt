@@ -17,12 +17,12 @@ class Database private constructor() {
         }
     }
 
-    init {
-        for (i in 0..20) {
-            val note = Note(i, "Note #$i", Random.nextInt(3))
-            notesMutableList.add(note)
-        }
-    }
+//    init {
+//        for (i in 0..20) {
+//            val note = Note(0, "Note #$i", Random.nextInt(3))
+//            notesMutableList.add(note)
+//        }
+//    }
 
     fun add(note: Note) {
         notesMutableList.add(note)

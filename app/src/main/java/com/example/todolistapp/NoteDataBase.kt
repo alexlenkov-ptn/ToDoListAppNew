@@ -20,7 +20,10 @@ abstract class NoteDataBase : RoomDatabase() {
                 application,
                 NoteDataBase::class.java,
                 Constants.DB_NAME,
-            ).build()
+            )
+                .allowMainThreadQueries() // позволяет обойти ограничение, чтобы обойти главный поток
+                // можно указывать только в целях теста
+                .build()
             return instance
         }
     }

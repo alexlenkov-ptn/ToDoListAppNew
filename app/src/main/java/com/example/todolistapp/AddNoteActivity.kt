@@ -14,23 +14,25 @@ class AddNoteActivity : AppCompatActivity() {
         get() = _binding
             ?: throw IllegalStateException("Binding for ActivityAddNoteBinding ust not be null")
 
-    private val database: Database = Database.getInstance()
+    private var noteDataBase: NoteDataBase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        noteDataBase = NoteDataBase.getInstance(application)
+
         binding.buttonSave.setOnClickListener {
             saveNote()
         }
     }
 
     private fun saveNote() {
-        val id = database.getNotes().size
         val text = binding.editTextTextNewNote.text.toString().trim()
         val priority = getPriority()
-        val note = Note(id, text, priority)
-        database.add(note)
+        val note = Note(text = text, priority = priority)
+        noteDataBase?.notesDao()?.addNote(note)
         finish()
     }
 

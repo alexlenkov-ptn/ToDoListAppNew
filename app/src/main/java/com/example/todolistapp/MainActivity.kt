@@ -1,5 +1,6 @@
 package com.example.todolistapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,11 +8,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
-private var noteDataBase : NoteDataBase? = null
+private var noteDataBase: NoteDataBase? = null
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var notesAdapter : NotesAdapter
+    private lateinit var notesAdapter: NotesAdapter
 
     private var _binding: ActivityMainBinding? = null
     private val binding
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
 
 
         val itemTouchHelper = ItemTouchHelper(
-            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or  ItemTouchHelper.RIGHT) {
+            object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
@@ -61,7 +63,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
     }
 
     override fun onResume() {
@@ -69,8 +70,10 @@ class MainActivity : AppCompatActivity() {
         showNotes()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun showNotes() {
-            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
+        notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
+        notesAdapter.notifyDataSetChanged()
     }
 }
 
