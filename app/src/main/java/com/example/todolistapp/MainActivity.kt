@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
-private var noteDataBase: NoteDataBase? = null
+//private var noteDataBase: NoteDataBase? = null Удаляем, т.к. строим модель MVVM
+private lateinit var viewModel : MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        noteDataBase = NoteDataBase.getInstance(application)
+        viewModel = MainViewModel(application) // MVVM
+
+//        noteDataBase = NoteDataBase.getInstance(application)
 
         binding.buttonAddNote.setOnClickListener {
             val intent: Intent = AddNoteActivity.newIntent(this)
@@ -41,10 +44,10 @@ class MainActivity : AppCompatActivity() {
         notesAdapter = NotesAdapter()
         binding.recyclerViewNotes.adapter = notesAdapter
 
-        noteDataBase?.notesDao()?.getNotes()?.observe(this, object : Observer<List<Note>> {
+        viewModel.getNotes()?.observe(this, object : Observer<List<Note>> {
             override fun onChanged(notes: List<Note>) {
                 notesAdapter.notes = notes
-                notesAdapter.updateNotes(notes ?: emptyList())
+                notesAdapter.updateNotes(notes)
             }
 
         })
@@ -63,15 +66,18 @@ class MainActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val note = notesAdapter.notes[position]
+                    viewModel.remove(note)
 
-                    val thread = Thread { // Создан поток. Внутри него удалим элемент
-                        noteDataBase?.notesDao()?.remove(note.id)
-//                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
-//                            showNotes() // вызываем на главном потоке
-//                        }) ЗАМЕНЕН Live Data
 
-                    }
-                    thread.start()
+//                    val thread = Thread { // Создан поток. Внутри него удалим элемент
+//                        noteDataBase?.notesDao()?.remove(note.id)
+////                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
+////                            showNotes() // вызываем на главном потоке
+////                        }) ЗАМЕНЕН Live Data
+//
+//                    }
+//                    thread.start()
+
                 }
             }
         )
