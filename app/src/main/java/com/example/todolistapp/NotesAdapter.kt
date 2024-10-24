@@ -1,7 +1,6 @@
 package com.example.todolistapp
 
-import android.os.Handler
-import android.os.Looper
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +18,11 @@ class NotesAdapter() :
             field = onNoteClickListener
         }
 
-//    fun updateNotes(notes: List<Note>) {
-//        this.notes = notes
-//        notifyDataSetChanged()
-//    }
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateNotes(notes: List<Note>) {
+        this.notes = notes
+        notifyDataSetChanged()
+    }
 
 
 
@@ -51,7 +51,6 @@ class NotesAdapter() :
         viewHolder.itemView.setOnClickListener {
             onNoteClickListener?.onNoteClick(note)
         }
-
     }
 
     override fun getItemCount(): Int {

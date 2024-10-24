@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         noteDataBase?.notesDao()?.getNotes()?.observe(this, object : Observer<List<Note>> {
             override fun onChanged(notes: List<Note>) {
                 notesAdapter.notes = notes
-//                notesAdapter.notifyDataSetChanged()
+                notesAdapter.updateNotes(notes ?: emptyList())
             }
 
         })
