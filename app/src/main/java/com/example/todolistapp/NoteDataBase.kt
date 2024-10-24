@@ -7,20 +7,22 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [Note::class],
-    version = 1
+    version = 1,
+    exportSchema = false,
 ) // При изменении БД номер версии нужно менять
 abstract class NoteDataBase : RoomDatabase() {
 
-    private var instance: NoteDataBase? = null
+    companion object {
+        private var instance: NoteDataBase? = null
 
-
-    fun getInstance(application: Application): NoteDataBase? {
-        if (instance == null) instance = Room.databaseBuilder(
-            application,
-            NoteDataBase::class.java,
-            Constants.DB_NAME,
-        ).build()
-        return instance
+        fun getInstance(application: Application): NoteDataBase? {
+            if (instance == null) instance = Room.databaseBuilder(
+                application,
+                NoteDataBase::class.java,
+                Constants.DB_NAME,
+            ).build()
+            return instance
+        }
     }
 
     abstract fun notesDao() : NotesDao

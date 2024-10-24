@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
-private val database : Database = Database.getInstance()
+private var noteDataBase : NoteDataBase? = null
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        noteDataBase = NoteDataBase.getInstance(application)
+
         binding.buttonAddNote.setOnClickListener {
             val intent: Intent = AddNoteActivity.newIntent(this)
             startActivity(intent)
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         notesAdapter = NotesAdapter()
         binding.recyclerViewNotes.adapter = notesAdapter
+
 
         val itemTouchHelper = ItemTouchHelper(
             object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or  ItemTouchHelper.RIGHT) {
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val note = notesAdapter.notes[position]
-                    database.remove(note.id)
+                    noteDataBase?.notesDao()?.remove(note.id)
                     showNotes()
                 }
             }
@@ -57,6 +60,8 @@ class MainActivity : AppCompatActivity() {
             override fun onNoteClick(note: Note) {
             }
         }
+
+
     }
 
     override fun onResume() {
@@ -65,8 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showNotes() {
-        notesAdapter.notes = database.getNotes()
-        notesAdapter.updateNotes(database.getNotes())
+            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
     }
 }
 
