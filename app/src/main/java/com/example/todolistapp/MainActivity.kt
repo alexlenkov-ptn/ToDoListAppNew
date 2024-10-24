@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
@@ -14,7 +15,8 @@ private var noteDataBase: NoteDataBase? = null
 
 class MainActivity : AppCompatActivity() {
 
-    private val handler = Handler(Looper.getMainLooper()) // сюда отправим объект Runnable, который будет вызывать метод run в главном потоке
+//    private val handler = Handler(Looper.getMainLooper()) // сюда отправим объект Runnable, который будет вызывать метод run в главном потоке
+// ЗАМЕНЕН Live Data
 
     private lateinit var notesAdapter: NotesAdapter
 
@@ -39,7 +41,13 @@ class MainActivity : AppCompatActivity() {
         notesAdapter = NotesAdapter()
         binding.recyclerViewNotes.adapter = notesAdapter
 
+        noteDataBase?.notesDao()?.getNotes()?.observe(this, object : Observer<List<Note>> {
+            override fun onChanged(notes: List<Note>) {
+                notesAdapter.notes = notes
+//                notesAdapter.notifyDataSetChanged()
+            }
 
+        })
 
         val itemTouchHelper = ItemTouchHelper(
             object :
@@ -58,9 +66,9 @@ class MainActivity : AppCompatActivity() {
 
                     val thread = Thread { // Создан поток. Внутри него удалим элемент
                         noteDataBase?.notesDao()?.remove(note.id)
-                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
-                            showNotes() // вызываем на главном потоке
-                        })
+//                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
+//                            showNotes() // вызываем на главном потоке
+//                        }) ЗАМЕНЕН Live Data
 
                     }
                     thread.start()
@@ -77,24 +85,27 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        showNotes()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        showNotes()
+//    }
+    // После добавления LiveData не нужно делать
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun showNotes() {
-        val thread = Thread {
-            val notes : List<Note> = noteDataBase?.notesDao()?.getNotes() ?: emptyList() // получение данных в фоновом потоке
+//    @SuppressLint("NotifyDataSetChanged")
+//    private fun showNotes() {
+//        val thread = Thread {
+//            val notes : List<Note> = noteDataBase?.notesDao()?.getNotes() ?: emptyList() // получение данных в фоновом потоке
+//
+////            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
+//
+//            handler.post(kotlinx.coroutines.Runnable {
+//                notesAdapter.notes = notes
+//                notesAdapter.notifyDataSetChanged()
+//            })
+//        }
+//        thread.start()
+//    }
+    // ЗАМЕНЕН на LiveData
 
-//            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
-
-            handler.post(kotlinx.coroutines.Runnable {
-                notesAdapter.notes = notes
-                notesAdapter.notifyDataSetChanged()
-            })
-        }
-        thread.start()
-    }
 }
 
