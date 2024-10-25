@@ -44,7 +44,6 @@ class AddNoteActivity : AppCompatActivity() {
             })
         }
         thread.start()
-
     }
 
     private fun getPriority(): Int {

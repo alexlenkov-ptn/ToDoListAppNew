@@ -1,23 +1,19 @@
 package com.example.todolistapp
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
-//private var noteDataBase: NoteDataBase? = null Удаляем, т.к. строим модель MVVM
 private lateinit var viewModel : MainViewModel
 
 class MainActivity : AppCompatActivity() {
-
-//    private val handler = Handler(Looper.getMainLooper()) // сюда отправим объект Runnable, который будет вызывать метод run в главном потоке
-// ЗАМЕНЕН Live Data
 
     private lateinit var notesAdapter: NotesAdapter
 
@@ -32,21 +28,38 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = MainViewModel(application) // MVVM
+        viewModel = ViewModelProvider(this@MainActivity)[MainViewModel::class.java]
 
-//        noteDataBase = NoteDataBase.getInstance(application)
+        viewModel.apply {
+            getCount().observe(this@MainActivity, object : Observer<Int> {
+                override fun onChanged(value: Int) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        count.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        }
 
         binding.buttonAddNote.setOnClickListener {
             val intent: Intent = AddNoteActivity.newIntent(this)
             startActivity(intent)
         }
 
-        notesAdapter = NotesAdapter()
+        notesAdapter = NotesAdapter().apply {
+            onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
+                override fun onNoteClick(note: Note) {
+                    Log.d("NotesAdapter", "Note clicked: ${note.text}")
+                    viewModel.showCount()
+                }
+            }
+        }
+
         binding.recyclerViewNotes.adapter = notesAdapter
 
         viewModel.getNotes()?.observe(this, object : Observer<List<Note>> {
             override fun onChanged(notes: List<Note>) {
-                notesAdapter.notes = notes
                 notesAdapter.updateNotes(notes)
             }
 
@@ -68,50 +81,13 @@ class MainActivity : AppCompatActivity() {
                     val note = notesAdapter.notes[position]
                     viewModel.remove(note)
 
-
-//                    val thread = Thread { // Создан поток. Внутри него удалим элемент
-//                        noteDataBase?.notesDao()?.remove(note.id)
-////                        handler.post(kotlinx.coroutines.Runnable { // сюда прилетает объект run, который вызывается на главном потоке
-////                            showNotes() // вызываем на главном потоке
-////                        }) ЗАМЕНЕН Live Data
-//
-//                    }
-//                    thread.start()
-
                 }
             }
         )
 
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewNotes)
 
-        notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
-            override fun onNoteClick(note: Note) {
-            }
-        }
-
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//        showNotes()
-//    }
-    // После добавления LiveData не нужно делать
-
-//    @SuppressLint("NotifyDataSetChanged")
-//    private fun showNotes() {
-//        val thread = Thread {
-//            val notes : List<Note> = noteDataBase?.notesDao()?.getNotes() ?: emptyList() // получение данных в фоновом потоке
-//
-////            notesAdapter.notes = noteDataBase?.notesDao()?.getNotes() ?: emptyList()
-//
-//            handler.post(kotlinx.coroutines.Runnable {
-//                notesAdapter.notes = notes
-//                notesAdapter.notifyDataSetChanged()
-//            })
-//        }
-//        thread.start()
-//    }
-    // ЗАМЕНЕН на LiveData
 
 }
 
