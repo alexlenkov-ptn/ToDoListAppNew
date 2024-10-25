@@ -2,8 +2,6 @@ package com.example.todolistapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,11 +9,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistapp.databinding.ActivityMainBinding
 
-private lateinit var viewModel : MainViewModel
+private lateinit var viewModel: MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var notesAdapter: NotesAdapter
+    private val notesAdapter = NotesAdapter()
 
     private var _binding: ActivityMainBinding? = null
     private val binding
@@ -28,32 +26,11 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this@MainActivity)[MainViewModel::class.java]
-
-        viewModel.apply {
-            getCount().observe(this@MainActivity, object : Observer<Int> {
-                override fun onChanged(value: Int) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        count.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
-        }
+        ViewModelProvider(this@MainActivity)[MainViewModel::class.java].also { viewModel = it }
 
         binding.buttonAddNote.setOnClickListener {
             val intent: Intent = AddNoteActivity.newIntent(this)
             startActivity(intent)
-        }
-
-        notesAdapter = NotesAdapter().apply {
-            onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
-                override fun onNoteClick(note: Note) {
-                    Log.d("NotesAdapter", "Note clicked: ${note.text}")
-                    viewModel.showCount()
-                }
-            }
         }
 
         binding.recyclerViewNotes.adapter = notesAdapter
