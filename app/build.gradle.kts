@@ -69,4 +69,9 @@ dependencies {
     //зависимость RxJava при использовании Room
     implementation("androidx.room:room-rxjava3:$room_version")
 
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+
+    implementation("androidx.room:room-rxjava3:$room_version")
+
 }
