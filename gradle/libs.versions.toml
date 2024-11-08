@@ -13,6 +13,7 @@ constraintlayout = "2.1.4"
 room_version = "2.6.1"
 rxandroid_version="3.0.2"
 rxjava_version="3.1.8"
+roomCommon = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +30,7 @@ room-annotation-processor = {group="androidx.room", name = "room-compiler", vers
 room-rxjava3 = {group = "androidx.room", name = "room-rxjava3", version.ref ="room_version"}
 rxandroid = {group = "io.reactivex.rxjava3", name = "rxandroid", version.ref ="rxandroid_version"}
 rxjava = {group = "io.reactivex.rxjava3", name = "rxjava", version.ref ="rxjava_version"}
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 
 
 [plugins]
