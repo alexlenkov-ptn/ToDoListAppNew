@@ -13,7 +13,7 @@ class NotesAdapter() :
 
     var notes: List<Note> = listOf()
 
-    var onNoteClickListener : OnNoteClickListener? = null
+    var onNoteClickListener: OnNoteClickListener? = null
         set(onNoteClickListener) {
             field = onNoteClickListener
         }
@@ -23,8 +23,6 @@ class NotesAdapter() :
         this.notes = notes
         notifyDataSetChanged()
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(
