@@ -33,7 +33,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("MainViewModel", "refreshList error: $error")
                 }
             )
-    compositeDisposable.dispose()
+        disposable?.let { compositeDisposable.add(it) }
     }
 
     fun remove(note: Note) {
@@ -44,6 +44,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ?.subscribe() {
                 Log.d("MainViewModel", "remove" + note.id)
                 refreshList()
+
             }
 
         disposable?.let { compositeDisposable.add(it) }

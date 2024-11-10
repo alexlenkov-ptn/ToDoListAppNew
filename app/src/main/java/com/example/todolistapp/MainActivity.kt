@@ -36,13 +36,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.recyclerViewNotes.adapter = notesAdapter
 
-        viewModel.getNotes()?.observe(this, object : Observer<List<Note>> {
-            override fun onChanged(notes: List<Note>) {
-                notesAdapter.updateNotes(notes)
-            }
+        viewModel.getNotes().observe(this)
 
-        })
-
+        { notes ->
+            notesAdapter.updateNotes(notes)
+            binding.recyclerViewNotes.adapter = notesAdapter
+        }
         val itemTouchHelper = ItemTouchHelper(
             object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -58,7 +57,6 @@ class MainActivity : AppCompatActivity() {
                     val position = viewHolder.adapterPosition
                     val note = notesAdapter.notes[position]
                     viewModel.remove(note)
-
                 }
             }
         )
