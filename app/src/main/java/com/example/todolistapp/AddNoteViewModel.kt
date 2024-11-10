@@ -27,7 +27,6 @@ class AddNoteViewModel(application: Application) : AndroidViewModel(application)
     fun saveNote(note: Note) {
 
         disposable = notesDao.addNote(note)
-            .delay(5, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {

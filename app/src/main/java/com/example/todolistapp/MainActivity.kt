@@ -13,6 +13,7 @@ private lateinit var viewModel: MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
+
     private val notesAdapter = NotesAdapter()
 
     private var _binding: ActivityMainBinding? = null
@@ -65,6 +66,12 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewNotes)
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshList()
+    }
+
 
 }
 
