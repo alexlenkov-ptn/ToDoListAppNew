@@ -1,6 +1,7 @@
 package com.example.todolistapp
 
 import android.app.Application
+import android.app.Notification.Action
 import android.util.Log
 import androidx.core.util.Consumer
 import androidx.lifecycle.AndroidViewModel
@@ -34,7 +35,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     notes.value = notesFromDb
                 },
                 { error ->
-                    Log.d("MainViewModel", "refreshList error: $error")
+                    Log.e("MainViewModel", "refreshList error: ${error.message}", error)
                 }
             )
         disposable?.let { compositeDisposable.add(it) }
@@ -45,13 +46,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         disposable = removeRx(note)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe() {
-                Log.d("MainViewModel", "remove" + note.id)
-                refreshList()
-
-            }
+            .subscribe(
+                {
+                    Log.d("MainViewModel", "remove" + note.id)
+                    refreshList()
+                },
+                { error ->
+                    Log.e("MainViewModel", "remove error: ${error.message}", error)
+                }
+            )
         disposable?.let { compositeDisposable.add(it) }
-
     }
 
     private fun getNotesRx(): Single<List<Note>> {
