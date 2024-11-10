@@ -46,7 +46,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 refreshList()
 
             }
-
         disposable?.let { compositeDisposable.add(it) }
 
     }
