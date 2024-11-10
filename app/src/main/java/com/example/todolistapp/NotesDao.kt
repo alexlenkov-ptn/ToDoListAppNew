@@ -12,14 +12,14 @@ import io.reactivex.rxjava3.core.Single
 interface NotesDao {
 
     @Query("SELECT * FROM notes")
-    fun getNotes(): Single<List<Note>>
+    fun getNotes() : List<Note>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE) // помещает объект в таблицу notes
-    fun addNote(note: Note) : Completable
+    fun addNote(note: Note)
 
 
     @Query("DELETE FROM NOTES WHERE id = :id") // удаляем по айдишке
-    fun remove(id: Int) : Completable
+    fun remove(id: Int)
 
 }

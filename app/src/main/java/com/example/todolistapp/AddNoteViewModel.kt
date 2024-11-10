@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -25,8 +26,7 @@ class AddNoteViewModel(application: Application) : AndroidViewModel(application)
     private lateinit var disposable : Disposable
 
     fun saveNote(note: Note) {
-
-        disposable = notesDao.addNote(note)
+        disposable = saveRx(note)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -34,6 +34,12 @@ class AddNoteViewModel(application: Application) : AndroidViewModel(application)
                 shouldCloseScreen.postValue(true)
             }
         compositeDisposable.add(disposable)
+    }
+
+    private fun saveRx(note: Note): Completable {
+        return Completable.fromAction {
+            notesDao.addNote(note)
+        }
     }
 
     override fun onCleared() {
